@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { requireUser } from '@/utils/requireUser';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { FileText, Plus, History, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Briefcase, Heart, FileText, ChevronRight } from 'lucide-react';
 
 const DashboardPage = () => {
   const [userData, setUserData] = useState<any>(null);
@@ -41,109 +41,85 @@ const DashboardPage = () => {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">
-          Welcome back, {userData.profile.profession}!
-        </h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Resume Dashboard</h1>
+          <Button asChild className="bg-gradient-to-r from-applypilot-teal to-applypilot-green border-0">
+            <Link to="/resume/new">
+              <Plus className="w-5 h-5 mr-2" />
+              Create New Resume
+            </Link>
+          </Button>
+        </div>
 
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {/* Recommended Jobs */}
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Quick Actions */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-lg font-medium">
-                Recommended Jobs
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold flex items-center">
+                <FileText className="w-5 h-5 mr-2 text-applypilot-teal" />
+                Quick Actions
               </CardTitle>
-              <Briefcase className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Based on your profile and preferences
-                </p>
-                <div className="space-y-2">
-                  {/* Sample job recommendations */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Senior Developer</p>
-                      <p className="text-sm text-muted-foreground">TechCorp Inc.</p>
-                    </div>
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link to="/jobs/job-1">
-                        <ChevronRight className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Full Stack Engineer</p>
-                      <p className="text-sm text-muted-foreground">Innovate Solutions</p>
-                    </div>
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link to="/jobs/job-2">
-                        <ChevronRight className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-                <Button variant="outline" className="w-full" asChild>
-                  <Link to="/jobs">View All Jobs</Link>
-                </Button>
-              </div>
+            <CardContent className="space-y-4">
+              <Button variant="outline" className="w-full justify-between" asChild>
+                <Link to="/resume/new">
+                  Create New Resume
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </Button>
+              <Button variant="outline" className="w-full justify-between" asChild>
+                <Link to="/resume/templates">
+                  Browse Templates
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </Button>
+              <Button variant="outline" className="w-full justify-between" asChild>
+                <Link to="/resume/analyze">
+                  Analyze Existing Resume
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 
-          {/* Saved Jobs */}
+          {/* Recent Resumes */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-lg font-medium">
-                Saved Jobs
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold flex items-center">
+                <History className="w-5 h-5 mr-2 text-applypilot-green" />
+                Recent Resumes
               </CardTitle>
-              <Heart className="h-5 w-5 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Jobs you've bookmarked for later
-                </p>
-                <div className="space-y-2">
-                  <p className="text-sm text-center text-muted-foreground">
-                    No saved jobs yet
-                  </p>
+                {/* Show message if no resumes */}
+                <div className="text-center py-8 text-muted-foreground">
+                  <FileText className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                  <p>No resumes created yet</p>
+                  <Button 
+                    variant="link" 
+                    asChild 
+                    className="mt-2 text-applypilot-teal"
+                  >
+                    <Link to="/resume/new">Create your first resume</Link>
+                  </Button>
                 </div>
-                <Button variant="outline" className="w-full" asChild>
-                  <Link to="/jobs">Browse Jobs</Link>
-                </Button>
               </div>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Applications */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-lg font-medium">
-                Applications
-              </CardTitle>
-              <FileText className="h-5 w-5 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Track your job applications
-                </p>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Frontend Developer</p>
-                      <p className="text-sm text-muted-foreground">Status: Pending</p>
-                    </div>
-                    <Button variant="ghost" size="sm">
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                <Button variant="outline" className="w-full">
-                  View All Applications
-                </Button>
-              </div>
+        {/* Tips Section */}
+        <div className="mt-8">
+          <Card className="bg-gradient-to-r from-applypilot-teal/10 to-applypilot-green/10">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-3">Tips for a Great Resume</h3>
+              <ul className="space-y-2 list-disc list-inside text-muted-foreground">
+                <li>Keep your resume concise and focused</li>
+                <li>Highlight your achievements with specific metrics</li>
+                <li>Tailor your resume for each job application</li>
+                <li>Use keywords from the job description</li>
+              </ul>
             </CardContent>
           </Card>
         </div>
