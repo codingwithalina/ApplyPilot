@@ -22,6 +22,7 @@ import ConfirmationPage from "./pages/ConfirmationPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
+import UploadResumePage from "./pages/UploadResumePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -72,6 +73,7 @@ const App = () => {
                         <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
                         <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
                         <Route path="/dashboard" element={user ? <DashboardPage /> : <Navigate to="/login" replace />} />
+                        <Route path="/resume/upload" element={user ? <UploadResumePage /> : <Navigate to="/login" replace />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </main>
@@ -87,4 +89,4 @@ const App = () => {
   );
 };
 
-export default App
+export default App;
