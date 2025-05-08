@@ -4,6 +4,7 @@ import { useProfile } from "@/context/ProfileContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -18,32 +19,43 @@ export function ProfileForm() {
   const navigate = useNavigate();
   const { profile, dbProfile, resume, updateProfile } = useProfile();
   
-  const [profession, setProfession] = useState(profile?.profession || dbProfile?.desired_title || "");
-  const [salary, setSalary] = useState<number>(profile?.salary || dbProfile?.salary_min || 0);
-  const [location, setLocation] = useState(profile?.location || dbProfile?.location || "");
-  const [resumeFile, setResumeFile] = useState<File | null>(profile?.resumeFile || null);
+  const [fullName, setFullName] = useState(dbProfile?.full_name || "");
+  const [desiredTitle, setDesiredTitle] = useState(dbProfile?.desired_title || "");
+  const [location, setLocation] = useState(dbProfile?.location || "");
+  const [salaryMin, setSalaryMin] = useState<number>(dbProfile?.salary_min || 0);
+  const [salaryMax, setSalaryMax] = useState<number>(dbProfile?.salary_max || 0);
+  const [skills, setSkills] = useState(dbProfile?.skills || "");
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!profession || !salary || !location) {
+    if (!fullName || !desiredTitle || !location || !salaryMin || !salaryMax || !skills) {
       toast.error("Please fill all required fields");
+      return;
+    }
+
+    if (salaryMin > salaryMax) {
+      toast.error("Minimum salary cannot be greater than maximum salary");
       return;
     }
     
     try {
       await updateProfile({
-        profession,
-        salary,
+        full_name: fullName,
+        desired_title: desiredTitle,
         location,
+        salary_min: salaryMin,
+        salary_max: salaryMax,
+        skills,
         resumeFile,
-        coverLetterFile: null,
       });
       
       toast.success("Profile updated successfully!");
       navigate("/dashboard");
     } catch (error) {
       toast.error("Failed to update profile. Please try again.");
+      console.error(error);
     }
   };
 
@@ -56,7 +68,7 @@ export function ProfileForm() {
   return (
     <Card className="w-full max-w-xl mx-auto">
       <CardHeader>
-        <CardTitle>Create Your Profile</CardTitle>
+        <CardTitle>{dbProfile ? 'Update Your Profile' : 'Create Your Profile'}</CardTitle>
         <CardDescription>
           Complete your profile to discover job opportunities and create personalized cover letters.
         </CardDescription>
@@ -64,26 +76,24 @@ export function ProfileForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="profession">Desired Profession / Field *</Label>
+            <Label htmlFor="fullName">Full Name *</Label>
             <Input
-              id="profession"
-              placeholder="e.g. Software Developer, UX Designer"
-              value={profession}
-              onChange={(e) => setProfession(e.target.value)}
+              id="fullName"
+              placeholder="e.g. John Doe"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               required
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="salary">Expected Salary ($ per year) *</Label>
+            <Label htmlFor="desiredTitle">Desired Job Title *</Label>
             <Input
-              id="salary"
-              type="number"
-              placeholder="e.g. 80000"
-              value={salary || ""}
-              onChange={(e) => setSalary(parseInt(e.target.value) || 0)}
+              id="desiredTitle"
+              placeholder="e.g. Software Developer"
+              value={desiredTitle}
+              onChange={(e) => setDesiredTitle(e.target.value)}
               required
-              min="0"
             />
           </div>
           
@@ -100,6 +110,45 @@ export function ProfileForm() {
                 <SelectItem value="Flexible">Flexible</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="salaryMin">Minimum Salary *</Label>
+              <Input
+                id="salaryMin"
+                type="number"
+                placeholder="e.g. 50000"
+                value={salaryMin || ""}
+                onChange={(e) => setSalaryMin(parseInt(e.target.value) || 0)}
+                required
+                min="0"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="salaryMax">Maximum Salary *</Label>
+              <Input
+                id="salaryMax"
+                type="number"
+                placeholder="e.g. 80000"
+                value={salaryMax || ""}
+                onChange={(e) => setSalaryMax(parseInt(e.target.value) || 0)}
+                required
+                min="0"
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="skills">Skills *</Label>
+            <Textarea
+              id="skills"
+              placeholder="Enter your skills (e.g. JavaScript, React, Node.js)"
+              value={skills}
+              onChange={(e) => setSkills(e.target.value)}
+              required
+            />
           </div>
           
           <div className="space-y-2">

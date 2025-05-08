@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { UserProfile, Profile, Resume } from '@/types';
+import { Profile, Resume } from '@/types';
 import { supabase } from '@/lib/supabase';
 
 interface ProfileContextType {
-  profile: UserProfile | null;
   dbProfile: Profile | null;
   resume: Resume | null;
-  updateProfile: (profile: UserProfile) => void;
+  updateProfile: (profile: Partial<Profile> & { resumeFile?: File | null }) => Promise<void>;
   resetProfile: () => void;
   loading: boolean;
 }
@@ -14,7 +13,6 @@ interface ProfileContextType {
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [dbProfile, setDbProfile] = useState<Profile | null>(null);
   const [resume, setResume] = useState<Resume | null>(null);
   const [loading, setLoading] = useState(true);
@@ -44,14 +42,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
         if (profileData) {
           setDbProfile(profileData);
-          // Convert DB profile to UserProfile format
-          setProfile({
-            profession: profileData.desired_title || '',
-            salary: profileData.salary_min || 0,
-            location: profileData.location || '',
-            resumeFile: null,
-            coverLetterFile: null,
-          });
         }
 
         if (resumeData) {
@@ -67,19 +57,19 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     loadProfileData();
   }, []);
 
-  const updateProfile = async (newProfile: UserProfile) => {
+  const updateProfile = async (newProfile: Partial<Profile> & { resumeFile?: File | null }) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) throw new Error('No user found');
+
+      const { resumeFile, ...profileData } = newProfile;
 
       // Update profiles table
       const { data: updatedProfile, error: profileError } = await supabase
         .from('profiles')
         .upsert({
           id: user.id,
-          desired_title: newProfile.profession,
-          salary_min: newProfile.salary,
-          location: newProfile.location,
+          ...profileData,
           updated_at: new Date().toISOString(),
         })
         .select()
@@ -88,14 +78,14 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       if (profileError) throw profileError;
 
       // Handle resume upload if provided
-      if (newProfile.resumeFile) {
+      if (resumeFile) {
         const timestamp = Date.now();
-        const fileExt = newProfile.resumeFile.name.split('.').pop();
+        const fileExt = resumeFile.name.split('.').pop();
         const filePath = `${user.id}/${timestamp}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
           .from('resumes')
-          .upload(filePath, newProfile.resumeFile);
+          .upload(filePath, resumeFile);
 
         if (uploadError) throw uploadError;
 
@@ -117,7 +107,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         setResume(resumeData);
       }
 
-      setProfile(newProfile);
       setDbProfile(updatedProfile);
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -126,14 +115,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   };
 
   const resetProfile = () => {
-    setProfile(null);
     setDbProfile(null);
     setResume(null);
   };
 
   return (
     <ProfileContext.Provider value={{ 
-      profile, 
       dbProfile,
       resume, 
       updateProfile, 
