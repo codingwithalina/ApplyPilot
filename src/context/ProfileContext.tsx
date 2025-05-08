@@ -27,18 +27,26 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         }
 
         // Load profile
-        const { data: profileData } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single();
 
+        if (profileError && profileError.code !== 'PGRST116') {
+          throw profileError;
+        }
+
         // Load resume
-        const { data: resumeData } = await supabase
+        const { data: resumeData, error: resumeError } = await supabase
           .from('resumes')
           .select('*')
           .eq('user_id', user.id)
           .single();
+
+        if (resumeError && resumeError.code !== 'PGRST116') {
+          throw resumeError;
+        }
 
         if (profileData) {
           setDbProfile(profileData);
@@ -64,13 +72,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
       const { resumeFile, ...profileData } = newProfile;
 
-      // Update profiles table
+      // Update or insert profile
       const { data: updatedProfile, error: profileError } = await supabase
         .from('profiles')
         .upsert({
           id: user.id,
           ...profileData,
-          updated_at: new Date().toISOString(),
         })
         .select()
         .single();
@@ -98,7 +105,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           .upsert({
             user_id: user.id,
             file_url: publicUrl,
-            updated_at: new Date().toISOString(),
           })
           .select()
           .single();

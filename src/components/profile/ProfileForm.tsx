@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/context/ProfileContext";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import { toast } from "sonner";
 
 export function ProfileForm() {
   const navigate = useNavigate();
-  const { profile, dbProfile, resume, updateProfile } = useProfile();
+  const { dbProfile, resume, updateProfile } = useProfile();
   
   const [fullName, setFullName] = useState(dbProfile?.full_name || "");
   const [desiredTitle, setDesiredTitle] = useState(dbProfile?.desired_title || "");
@@ -26,6 +26,18 @@ export function ProfileForm() {
   const [salaryMax, setSalaryMax] = useState<number>(dbProfile?.salary_max || 0);
   const [skills, setSkills] = useState(dbProfile?.skills || "");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+
+  // Update form when dbProfile changes
+  useEffect(() => {
+    if (dbProfile) {
+      setFullName(dbProfile.full_name || "");
+      setDesiredTitle(dbProfile.desired_title || "");
+      setLocation(dbProfile.location || "");
+      setSalaryMin(dbProfile.salary_min || 0);
+      setSalaryMax(dbProfile.salary_max || 0);
+      setSkills(dbProfile.skills || "");
+    }
+  }, [dbProfile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
