@@ -103,6 +103,9 @@ Damit sind deine Binärdateien (Icons, JPGs, PNGs etc.) weltweit über eine fest
 ## ✅ Future Features
 
 - [ ] Templates wählen für bewerbung
+- [ ] Login und Registrieren eindeutiger machen
+- [ ] wenn nutzername oder pw falsch-rot kennzeichnen und text dazu
+- [ ] skills selection
 - [ ] Bewerbung direkt senden Button
 - [ ] Lebenslauf erstellen, falls keiner vorhanden ist (mit KI)
 - [ ] Assessment Center
