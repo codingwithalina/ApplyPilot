@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -17,21 +16,9 @@ import {
 export function NavBar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
     setMounted(true);
-    // Check auth status
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
   }, []);
 
   const scrollToSection = (id: string) => {
@@ -65,29 +52,30 @@ export function NavBar() {
           >
             Home
           </Link>
-          {user ? (
-            <Link
-              to="/dashboard"
-              className="text-gray-700 hover:text-applypilot-green transition-colors dark:text-gray-300 dark:hover:text-applypilot-green"
-            >
-              Dashboard
-            </Link>
-          ) : (
-            <>
-              <button
-                onClick={() => scrollToSection("testimonials")}
-                className="text-gray-700 hover:text-applypilot-green transition-colors dark:text-gray-300 dark:hover:text-applypilot-green"
-              >
-                Testimonials
-              </button>
-              <button
-                onClick={() => scrollToSection("pricing")}
-                className="text-gray-700 hover:text-applypilot-blue transition-colors dark:text-gray-300 dark:hover:text-applypilot-blue"
-              >
-                Pricing
-              </button>
-            </>
-          )}
+          <button
+            onClick={() => scrollToSection("testimonials")}
+            className="text-gray-700 hover:text-applypilot-green transition-colors dark:text-gray-300 dark:hover:text-applypilot-green"
+          >
+            Testimonials
+          </button>
+          <button
+            onClick={() => scrollToSection("pricing")}
+            className="text-gray-700 hover:text-applypilot-blue transition-colors dark:text-gray-300 dark:hover:text-applypilot-blue"
+          >
+            Pricing
+          </button>
+          <Link
+            to="/profile"
+            className="text-gray-700 hover:text-applypilot-green transition-colors dark:text-gray-300 dark:hover:text-applypilot-green"
+          >
+            Profile
+          </Link>
+          <Link
+            to="/jobs"
+            className="text-gray-700 hover:text-applypilot-blue transition-colors dark:text-gray-300 dark:hover:text-applypilot-blue"
+          >
+            Jobs
+          </Link>
         </nav>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
@@ -100,34 +88,19 @@ export function NavBar() {
               {theme === "dark" ? "Dark mode" : "Light mode"}
             </span>
           </div>
-          {user ? (
-            <Button
-              variant="outline"
-              onClick={async () => {
-                await supabase.auth.signOut();
-                window.location.href = '/';
-              }}
-              className="border-applypilot-teal text-applypilot-teal hover:bg-applypilot-teal/10"
-            >
-              Sign Out
-            </Button>
-          ) : (
-            <>
-              <Button
-                asChild
-                variant="outline"
-                className="border-applypilot-teal text-applypilot-teal hover:bg-applypilot-teal/10"
-              >
-                <Link to="/login">Sign In</Link>
-              </Button>
-              <Button
-                asChild
-                className="bg-gradient-to-r from-applypilot-teal to-applypilot-green border-0"
-              >
-                <Link to="/profile">Get Started</Link>
-              </Button>
-            </>
-          )}
+          <Button
+            asChild
+            variant="outline"
+            className="border-applypilot-teal text-applypilot-teal hover:bg-applypilot-teal/10"
+          >
+            <Link to="/login">Sign In</Link>
+          </Button>
+          <Button
+            asChild
+            className="bg-gradient-to-r from-applypilot-teal to-applypilot-green border-0"
+          >
+            <Link to="/profile">Get Started</Link>
+          </Button>
         </div>
       </div>
     </header>
