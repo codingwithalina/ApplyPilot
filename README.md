@@ -99,6 +99,9 @@ Damit sind deine Binärdateien (Icons, JPGs, PNGs etc.) weltweit über eine fest
 
 - [ ] Templates wählen für bewerbung
 - [ ] settings einfügen mit passwort reset etc.
+- [ ] Tabelle mit sticky Header beim Scrollen versehen.
+Mobile: Preis-Karten in einem horizontalen Swipe-Slider darstellen.
+Scroll-To-Top-Button am unteren Rand.
 - [ ] job alerts section verbessern
 - [ ] Login und Registrieren eindeutiger machen
 - [ ] wenn nutzername oder pw falsch-rot kennzeichnen und text dazu
