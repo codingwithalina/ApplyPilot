@@ -16,43 +16,40 @@ import { toast } from "sonner";
 
 export function ProfileForm() {
   const navigate = useNavigate();
-  const { profile, updateProfile } = useProfile();
+  const { profile, dbProfile, resume, updateProfile } = useProfile();
   
-  const [profession, setProfession] = useState(profile?.profession || "");
-  const [salary, setSalary] = useState<number>(profile?.salary || 0);
-  const [location, setLocation] = useState(profile?.location || "");
+  const [profession, setProfession] = useState(profile?.profession || dbProfile?.desired_title || "");
+  const [salary, setSalary] = useState<number>(profile?.salary || dbProfile?.salary_min || 0);
+  const [location, setLocation] = useState(profile?.location || dbProfile?.location || "");
   const [resumeFile, setResumeFile] = useState<File | null>(profile?.resumeFile || null);
-  const [coverLetterFile, setCoverLetterFile] = useState<File | null>(profile?.coverLetterFile || null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!profession || !salary || !location || !resumeFile) {
-      toast.error("Please fill all required fields and upload your resume");
+    if (!profession || !salary || !location) {
+      toast.error("Please fill all required fields");
       return;
     }
     
-    updateProfile({
-      profession,
-      salary,
-      location,
-      resumeFile,
-      coverLetterFile,
-    });
-    
-    toast.success("Profile created successfully!");
-    navigate("/jobs");
+    try {
+      await updateProfile({
+        profession,
+        salary,
+        location,
+        resumeFile,
+        coverLetterFile: null,
+      });
+      
+      toast.success("Profile updated successfully!");
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error("Failed to update profile. Please try again.");
+    }
   };
 
   const handleResumeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setResumeFile(e.target.files[0]);
-    }
-  };
-
-  const handleCoverLetterUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setCoverLetterFile(e.target.files[0]);
     }
   };
 
@@ -107,39 +104,40 @@ export function ProfileForm() {
           
           <div className="space-y-2">
             <Label htmlFor="resume">Upload Resume (PDF) *</Label>
-            <Input
-              id="resume"
-              type="file"
-              accept=".pdf"
-              onChange={handleResumeUpload}
-              required={!resumeFile}
-              className="cursor-pointer"
-            />
+            {resume ? (
+              <div className="space-y-2">
+                <p className="text-sm text-green-600">
+                  Current resume: <a href={resume.file_url} target="_blank" rel="noopener noreferrer" className="underline">View</a>
+                </p>
+                <Input
+                  id="resume"
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleResumeUpload}
+                  className="cursor-pointer"
+                />
+              </div>
+            ) : (
+              <Input
+                id="resume"
+                type="file"
+                accept=".pdf"
+                onChange={handleResumeUpload}
+                required={!resume}
+                className="cursor-pointer"
+              />
+            )}
             {resumeFile && (
               <p className="text-sm text-green-600 mt-1">
-                Uploaded: {resumeFile.name}
-              </p>
-            )}
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="coverLetter">Upload Cover Letter (PDF, Optional)</Label>
-            <Input
-              id="coverLetter"
-              type="file"
-              accept=".pdf"
-              onChange={handleCoverLetterUpload}
-              className="cursor-pointer"
-            />
-            {coverLetterFile && (
-              <p className="text-sm text-green-600 mt-1">
-                Uploaded: {coverLetterFile.name}
+                Selected: {resumeFile.name}
               </p>
             )}
           </div>
           
           <CardFooter className="px-0 pt-4">
-            <Button type="submit" className="w-full">Create Profile</Button>
+            <Button type="submit" className="w-full">
+              {dbProfile ? 'Update Profile' : 'Create Profile'}
+            </Button>
           </CardFooter>
         </form>
       </CardContent>
