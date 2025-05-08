@@ -3,22 +3,38 @@ import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { User } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
 
 export function NavBar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setMounted(true);
+    
+    // Get initial auth state
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const scrollToSection = (id: string) => {
@@ -27,6 +43,11 @@ export function NavBar() {
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
   };
 
   if (!mounted) {
@@ -52,24 +73,22 @@ export function NavBar() {
           >
             Home
           </Link>
-          <button
-            onClick={() => scrollToSection("testimonials")}
-            className="text-gray-700 hover:text-applypilot-green transition-colors dark:text-gray-300 dark:hover:text-applypilot-green"
-          >
-            Testimonials
-          </button>
-          <button
-            onClick={() => scrollToSection("pricing")}
-            className="text-gray-700 hover:text-applypilot-blue transition-colors dark:text-gray-300 dark:hover:text-applypilot-blue"
-          >
-            Pricing
-          </button>
-          <Link
-            to="/profile"
-            className="text-gray-700 hover:text-applypilot-green transition-colors dark:text-gray-300 dark:hover:text-applypilot-green"
-          >
-            Profile
-          </Link>
+          {!user && (
+            <>
+              <button
+                onClick={() => scrollToSection("testimonials")}
+                className="text-gray-700 hover:text-applypilot-green transition-colors dark:text-gray-300 dark:hover:text-applypilot-green"
+              >
+                Testimonials
+              </button>
+              <button
+                onClick={() => scrollToSection("pricing")}
+                className="text-gray-700 hover:text-applypilot-blue transition-colors dark:text-gray-300 dark:hover:text-applypilot-blue"
+              >
+                Pricing
+              </button>
+            </>
+          )}
           <Link
             to="/jobs"
             className="text-gray-700 hover:text-applypilot-blue transition-colors dark:text-gray-300 dark:hover:text-applypilot-blue"
@@ -88,19 +107,52 @@ export function NavBar() {
               {theme === "dark" ? "Dark mode" : "Light mode"}
             </span>
           </div>
-          <Button
-            asChild
-            variant="outline"
-            className="border-applypilot-teal text-applypilot-teal hover:bg-applypilot-teal/10"
-          >
-            <Link to="/login">Sign In</Link>
-          </Button>
-          <Button
-            asChild
-            className="bg-gradient-to-r from-applypilot-teal to-applypilot-green border-0"
-          >
-            <Link to="/profile">Get Started</Link>
-          </Button>
+          
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="border-applypilot-teal">
+                  <span className="w-8 h-8 rounded-full bg-applypilot-teal/10 flex items-center justify-center text-applypilot-teal mr-2">
+                    {user.email?.[0].toUpperCase()}
+                  </span>
+                  <span className="hidden sm:inline">{user.email}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard">Dashboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/settings">Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button
+                asChild
+                variant="outline"
+                className="border-applypilot-teal text-applypilot-teal hover:bg-applypilot-teal/10"
+              >
+                <Link to="/login">Sign In</Link>
+              </Button>
+              <Button
+                asChild
+                className="bg-gradient-to-r from-applypilot-teal to-applypilot-green border-0"
+              >
+                <Link to="/profile">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>
