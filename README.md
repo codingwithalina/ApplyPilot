@@ -102,6 +102,8 @@ Damit sind deine Binärdateien (Icons, JPGs, PNGs etc.) weltweit über eine fest
 
 ## ✅ Future Features
 
+- [ ] Templates wählen für bewerbung
+- [ ] Bewerbung direkt senden Button
 - [ ] Lebenslauf erstellen, falls keiner vorhanden ist (mit KI)
 - [ ] Assessment Center
 - [ ] Mit KI Vorstellungsgespräche üben
