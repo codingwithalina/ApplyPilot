@@ -98,6 +98,7 @@ Damit sind deine Binärdateien (Icons, JPGs, PNGs etc.) weltweit über eine fest
 ## ✅ Future Features
 
 - [ ] Templates wählen für bewerbung
+- [ ] settings einfügen mit passwort reset etc.
 - [ ] job alerts section verbessern
 - [ ] Login und Registrieren eindeutiger machen
 - [ ] wenn nutzername oder pw falsch-rot kennzeichnen und text dazu
