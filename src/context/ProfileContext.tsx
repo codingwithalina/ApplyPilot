@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Profile, Resume } from '@/types';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 interface ProfileContextType {
   dbProfile: Profile | null;
@@ -34,7 +35,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           .single();
 
         if (profileError && profileError.code !== 'PGRST116') {
-          throw profileError;
+          console.error('Error loading profile:', profileError);
         }
 
         // Load resume
@@ -45,24 +46,52 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           .single();
 
         if (resumeError && resumeError.code !== 'PGRST116') {
-          throw resumeError;
+          console.error('Error loading resume:', resumeError);
         }
 
-        if (profileData) {
-          setDbProfile(profileData);
-        }
-
-        if (resumeData) {
-          setResume(resumeData);
-        }
+        setDbProfile(profileData || null);
+        setResume(resumeData || null);
       } catch (error) {
-        console.error('Error loading profile:', error);
+        console.error('Error loading profile data:', error);
+        toast.error('Failed to load profile data');
       } finally {
         setLoading(false);
       }
     };
 
     loadProfileData();
+
+    // Subscribe to realtime changes
+    const profileSubscription = supabase
+      .channel('profile-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'profiles',
+      }, (payload) => {
+        if (payload.new) {
+          setDbProfile(payload.new as Profile);
+        }
+      })
+      .subscribe();
+
+    const resumeSubscription = supabase
+      .channel('resume-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'resumes',
+      }, (payload) => {
+        if (payload.new) {
+          setResume(payload.new as Resume);
+        }
+      })
+      .subscribe();
+
+    return () => {
+      profileSubscription.unsubscribe();
+      resumeSubscription.unsubscribe();
+    };
   }, []);
 
   const updateProfile = async (newProfile: Partial<Profile> & { resumeFile?: File | null }) => {
@@ -72,7 +101,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
       const { resumeFile, ...profileData } = newProfile;
 
-      // Update or insert profile
+      // Update profile
       const { data: updatedProfile, error: profileError } = await supabase
         .from('profiles')
         .upsert({

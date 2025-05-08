@@ -17,7 +17,7 @@ import { toast } from "sonner";
 
 export function ProfileForm() {
   const navigate = useNavigate();
-  const { dbProfile, resume, updateProfile } = useProfile();
+  const { dbProfile, resume, updateProfile, loading } = useProfile();
   
   const [fullName, setFullName] = useState(dbProfile?.full_name || "");
   const [desiredTitle, setDesiredTitle] = useState(dbProfile?.desired_title || "");
@@ -26,6 +26,7 @@ export function ProfileForm() {
   const [salaryMax, setSalaryMax] = useState<number>(dbProfile?.salary_max || 0);
   const [skills, setSkills] = useState(dbProfile?.skills || "");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   // Update form when dbProfile changes
   useEffect(() => {
@@ -38,6 +39,18 @@ export function ProfileForm() {
       setSkills(dbProfile.skills || "");
     }
   }, [dbProfile]);
+
+  if (loading) {
+    return (
+      <Card className="w-full max-w-xl mx-auto">
+        <CardContent className="py-6">
+          <div className="text-center">
+            <p>Loading profile...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +66,7 @@ export function ProfileForm() {
     }
     
     try {
+      setSubmitting(true);
       await updateProfile({
         full_name: fullName,
         desired_title: desiredTitle,
@@ -66,14 +80,25 @@ export function ProfileForm() {
       toast.success("Profile updated successfully!");
       navigate("/dashboard");
     } catch (error) {
+      console.error('Error updating profile:', error);
       toast.error("Failed to update profile. Please try again.");
-      console.error(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const handleResumeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setResumeFile(e.target.files[0]);
+      const file = e.target.files[0];
+      if (file.type !== 'application/pdf') {
+        toast.error('Please upload a PDF file');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error('File size must be less than 5MB');
+        return;
+      }
+      setResumeFile(file);
     }
   };
 
@@ -95,6 +120,7 @@ export function ProfileForm() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
+              disabled={submitting}
             />
           </div>
           
@@ -106,12 +132,18 @@ export function ProfileForm() {
               value={desiredTitle}
               onChange={(e) => setDesiredTitle(e.target.value)}
               required
+              disabled={submitting}
             />
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="location">Location Preference *</Label>
-            <Select value={location} onValueChange={setLocation} required>
+            <Select 
+              value={location} 
+              onValueChange={setLocation} 
+              disabled={submitting}
+              required
+            >
               <SelectTrigger id="location">
                 <SelectValue placeholder="Select a preference" />
               </SelectTrigger>
@@ -135,6 +167,7 @@ export function ProfileForm() {
                 onChange={(e) => setSalaryMin(parseInt(e.target.value) || 0)}
                 required
                 min="0"
+                disabled={submitting}
               />
             </div>
             
@@ -148,6 +181,7 @@ export function ProfileForm() {
                 onChange={(e) => setSalaryMax(parseInt(e.target.value) || 0)}
                 required
                 min="0"
+                disabled={submitting}
               />
             </div>
           </div>
@@ -160,6 +194,7 @@ export function ProfileForm() {
               value={skills}
               onChange={(e) => setSkills(e.target.value)}
               required
+              disabled={submitting}
             />
           </div>
           
@@ -176,6 +211,7 @@ export function ProfileForm() {
                   accept=".pdf"
                   onChange={handleResumeUpload}
                   className="cursor-pointer"
+                  disabled={submitting}
                 />
               </div>
             ) : (
@@ -186,6 +222,7 @@ export function ProfileForm() {
                 onChange={handleResumeUpload}
                 required={!resume}
                 className="cursor-pointer"
+                disabled={submitting}
               />
             )}
             {resumeFile && (
@@ -196,8 +233,12 @@ export function ProfileForm() {
           </div>
           
           <CardFooter className="px-0 pt-4">
-            <Button type="submit" className="w-full">
-              {dbProfile ? 'Update Profile' : 'Create Profile'}
+            <Button 
+              type="submit" 
+              className="w-full"
+              disabled={submitting}
+            >
+              {submitting ? 'Saving...' : (dbProfile ? 'Update Profile' : 'Create Profile')}
             </Button>
           </CardFooter>
         </form>
