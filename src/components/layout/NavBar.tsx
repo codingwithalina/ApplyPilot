@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
+import { LogOut } from "lucide-react";
 
 export function NavBar() {
   const { theme, setTheme } = useTheme();
@@ -109,33 +110,40 @@ export function NavBar() {
           </div>
           
           {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-applypilot-teal">
-                  <span className="w-8 h-8 rounded-full bg-applypilot-teal/10 flex items-center justify-center text-applypilot-teal mr-2">
-                    {user.email?.[0].toUpperCase()}
-                  </span>
-                  <span className="hidden sm:inline">{user.email}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/dashboard">Dashboard</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/profile">Profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/settings">Settings</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center space-x-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="border-applypilot-teal">
+                    <span className="w-8 h-8 rounded-full bg-applypilot-teal/10 flex items-center justify-center text-applypilot-teal mr-2">
+                      {user.email?.[0].toUpperCase()}
+                    </span>
+                    <span className="hidden sm:inline">{user.email}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard">Dashboard</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings">Settings</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={handleLogout}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="h-5 w-5" />
+                <span className="sr-only">Log out</span>
+              </Button>
+            </div>
           ) : (
             <>
               <Button
