@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Check, Gem } from "lucide-react";
+import { Check, Gem, UserPlus, Search, FileText, Send } from "lucide-react";
 
 const Homepage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -71,185 +71,79 @@ const Homepage = () => {
         </div>
 
         {/* Features Section */}
-        <div className="grid md:grid-cols-3 gap-6 mb-16">
-          <Card className="bg-card border-applypilot-teal/20">
-            <CardContent className="pt-6">
-              <div className="text-center space-y-2">
-                <div className="mx-auto w-12 h-12 rounded-full bg-applypilot-teal/10 flex items-center justify-center mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-applypilot-teal"
-                  >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                  </svg>
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">How It Works</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="bg-card border-applypilot-teal/20">
+              <CardContent className="pt-6">
+                <div className="text-center space-y-2">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-applypilot-teal/10 flex items-center justify-center mb-4">
+                    <UserPlus className="text-applypilot-teal w-6 h-6" />
+                  </div>
+                  <h3 className="text-xl font-medium text-applypilot-teal">
+                    Create Your Profile
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Fill in your desired profession, salary expectations, and
+                    location preferences. Upload your resume to help our AI
+                    understand your qualifications.
+                  </p>
                 </div>
-                <h3 className="text-xl font-medium text-applypilot-teal">
-                  Create Your Profile
-                </h3>
-                <p className="text-muted-foreground">
-                  Build your profile with your desired field, salary
-                  expectations, and location preferences.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-card border-applypilot-green/20">
-            <CardContent className="pt-6">
-              <div className="text-center space-y-2">
-                <div className="mx-auto w-12 h-12 rounded-full bg-applypilot-green/10 flex items-center justify-center mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-applypilot-green"
-                  >
-                    <rect
-                      x="2"
-                      y="7"
-                      width="20"
-                      height="14"
-                      rx="2"
-                      ry="2"
-                    ></rect>
-                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                  </svg>
+            <Card className="bg-card border-applypilot-green/20">
+              <CardContent className="pt-6">
+                <div className="text-center space-y-2">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-applypilot-green/10 flex items-center justify-center mb-4">
+                    <Search className="text-applypilot-green w-6 h-6" />
+                  </div>
+                  <h3 className="text-xl font-medium text-applypilot-green">
+                    Browse Job Listings
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Explore job opportunities that match your profile. Review
+                    details including job descriptions, requirements, and salary
+                    ranges.
+                  </p>
                 </div>
-                <h3 className="text-xl font-medium text-applypilot-green">
-                  Discover Jobs
-                </h3>
-                <p className="text-muted-foreground">
-                  Browse through job listings that match your skills and
-                  preferences.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-card border-applypilot-blue/20">
-            <CardContent className="pt-6">
-              <div className="text-center space-y-2">
-                <div className="mx-auto w-12 h-12 rounded-full bg-applypilot-blue/10 flex items-center justify-center mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-applypilot-blue"
-                  >
-                    <path d="M21 7v6h-6"></path>
-                    <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3.7-3.7"></path>
-                    <path d="M3 7h6"></path>
-                    <path d="M21 17a9 9 0 0 1-9 9 9 9 0 0 1-6-2.3L2.3 17.7"></path>
-                  </svg>
+            <Card className="bg-card border-applypilot-blue/20">
+              <CardContent className="pt-6">
+                <div className="text-center space-y-2">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-applypilot-blue/10 flex items-center justify-center mb-4">
+                    <FileText className="text-applypilot-blue w-6 h-6" />
+                  </div>
+                  <h3 className="text-xl font-medium text-applypilot-blue">
+                    Generate Cover Letter
+                  </h3>
+                  <p className="text-muted-foreground">
+                    With one click, our AI creates a customized cover letter
+                    tailored to the specific job and your resume. Edit the
+                    content as needed.
+                  </p>
                 </div>
-                <h3 className="text-xl font-medium text-applypilot-blue">
-                  Generate Cover Letters
-                </h3>
-                <p className="text-muted-foreground">
-                  Use AI to create personalized cover letters that highlight
-                  your strengths for each job.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
 
-        {/* How It Works Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">How It Works</h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Our AI-powered platform simplifies the job application process from
-            start to finish.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <div className="space-y-4">
-            <div className="flex items-start">
-              <div className="mr-4 flex-shrink-0 w-8 h-8 rounded-full bg-applypilot-teal/10 flex items-center justify-center">
-                <span className="font-medium text-applypilot-teal">1</span>
-              </div>
-              <div>
-                <h3 className="text-xl font-medium mb-2 text-applypilot-teal">
-                  Create Your Profile
-                </h3>
-                <p className="text-muted-foreground">
-                  Fill in your desired profession, salary expectations, and
-                  location preferences. Upload your resume to help our AI
-                  understand your qualifications.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start">
-              <div className="mr-4 flex-shrink-0 w-8 h-8 rounded-full bg-applypilot-green/10 flex items-center justify-center">
-                <span className="font-medium text-applypilot-green">2</span>
-              </div>
-              <div>
-                <h3 className="text-xl font-medium mb-2 text-applypilot-green">
-                  Browse Job Listings
-                </h3>
-                <p className="text-muted-foreground">
-                  Explore job opportunities that match your profile. Review
-                  details including job descriptions, requirements, and salary
-                  ranges.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-start">
-              <div className="mr-4 flex-shrink-0 w-8 h-8 rounded-full bg-applypilot-blue/10 flex items-center justify-center">
-                <span className="font-medium text-applypilot-blue">3</span>
-              </div>
-              <div>
-                <h3 className="text-xl font-medium mb-2 text-applypilot-blue">
-                  Generate Cover Letter
-                </h3>
-                <p className="text-muted-foreground">
-                  With one click, our AI creates a customized cover letter
-                  tailored to the specific job and your resume. Edit the content
-                  as needed.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start">
-              <div className="mr-4 flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-applypilot-teal via-applypilot-green to-applypilot-blue/10 flex items-center justify-center">
-                <span className="font-medium text-applypilot-blue">4</span>
-              </div>
-              <div>
-                <h3 className="text-xl font-medium mb-2 text-applypilot-blue">
-                  Submit Your Application
-                </h3>
-                <p className="text-muted-foreground">
-                  Review your application and submit it with confidence, knowing
-                  your cover letter is personalized for the position.
-                </p>
-              </div>
-            </div>
+            <Card className="bg-card border-applypilot-teal/20">
+              <CardContent className="pt-6">
+                <div className="text-center space-y-2">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-applypilot-teal/10 flex items-center justify-center mb-4">
+                    <Send className="text-applypilot-teal w-6 h-6" />
+                  </div>
+                  <h3 className="text-xl font-medium text-applypilot-teal">
+                    Submit Your Application
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Review your application and submit it with confidence,
+                    knowing your cover letter is personalized for the position.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
