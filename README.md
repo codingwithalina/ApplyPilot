@@ -72,11 +72,7 @@ To connect a domain, navigate to Project > Settings > Domains and click Connect 
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
 
-## ✅ Future Features
 
-- [ ] Lebenslauf erstellen, falls keiner vorhanden ist (mit KI)
-- [ ] Assessment Center
-- [ ] Mit KI Vorstellungsgespräche üben
 
 # Handling files skipped in bolt
 
@@ -103,3 +99,10 @@ Kurz und allgemein gesagt, gehst du so vor, um deine Bilder und Icons öffentlic
    Wenn du lokal entwickelst, reicht ein Neustart des Dev-Servers. In der Produktion ziehst du dann keine lokalen public/-Dateien mehr, sondern lädst sie vom CDN.
 
 Damit sind deine Binärdateien (Icons, JPGs, PNGs etc.) weltweit über eine feste URL erreichbar und du musst sie nicht mehr lokal in public/ verwalten.
+
+## ✅ Future Features
+
+- [ ] Lebenslauf erstellen, falls keiner vorhanden ist (mit KI)
+- [ ] Assessment Center
+- [ ] Mit KI Vorstellungsgespräche üben
+- [ ] Website: links lottieanimation, rechts cards die wechseln (die im moment drunter sind)
