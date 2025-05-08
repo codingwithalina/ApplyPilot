@@ -1,18 +1,13 @@
-# Welcome to your Lovable project
+# Welcome to your Bolt project
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/87a32753-453e-49bd-87fe-1a9869aac40e
+**URL**: [https://lovable.dev/projects/87a32753-453e-49bd-87fe-1a9869aac40e](https://bolt.new/~/github-ofpvpdhd)
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/87a32753-453e-49bd-87fe-1a9869aac40e) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
@@ -103,6 +98,7 @@ Damit sind deine Binärdateien (Icons, JPGs, PNGs etc.) weltweit über eine fest
 ## ✅ Future Features
 
 - [ ] Templates wählen für bewerbung
+- [ ] job alerts section verbessern
 - [ ] Login und Registrieren eindeutiger machen
 - [ ] wenn nutzername oder pw falsch-rot kennzeichnen und text dazu
 - [ ] skills selection
