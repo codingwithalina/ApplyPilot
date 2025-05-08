@@ -20,6 +20,7 @@ export function NavBar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [showEmail, setShowEmail] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,7 +60,7 @@ export function NavBar() {
     <header className="bg-white border-b border-gray-200 dark:bg-applypilot-dark dark:border-gray-800">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <Link to="/" className="flex items-center">
+          <Link to={user ? "/dashboard" : "/"} className="flex items-center">
             <img
               src="https://cdn.jsdelivr.net/gh/codingwithalina/ApplyPilot-with-bolt.diy@main/public/images/logo.png"
               alt="ApplyPilot Logo"
@@ -68,12 +69,6 @@ export function NavBar() {
           </Link>
         </div>
         <nav className="hidden md:flex items-center space-x-4">
-          <Link
-            to="/"
-            className="text-gray-700 hover:text-applypilot-teal transition-colors dark:text-gray-300 dark:hover:text-applypilot-teal"
-          >
-            Home
-          </Link>
           {!user && (
             <>
               <button
@@ -113,11 +108,18 @@ export function NavBar() {
             <div className="flex items-center space-x-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="border-applypilot-teal">
+                  <Button 
+                    variant="outline" 
+                    className="border-applypilot-teal group"
+                    onMouseEnter={() => setShowEmail(true)}
+                    onMouseLeave={() => setShowEmail(false)}
+                  >
                     <span className="w-8 h-8 rounded-full bg-applypilot-teal/10 flex items-center justify-center text-applypilot-teal mr-2">
                       {user.email?.[0].toUpperCase()}
                     </span>
-                    <span className="hidden sm:inline">{user.email}</span>
+                    <span className={`hidden sm:inline transition-opacity duration-200 ${showEmail ? 'opacity-100' : 'opacity-0'}`}>
+                      {user.email}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
