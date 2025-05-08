@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -26,6 +27,7 @@ export function ProfileForm() {
   const [salaryMax, setSalaryMax] = useState<number>(dbProfile?.salary_max || 0);
   const [skills, setSkills] = useState(dbProfile?.skills || "");
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [skipResume, setSkipResume] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Update form when dbProfile changes
@@ -64,6 +66,11 @@ export function ProfileForm() {
       toast.error("Minimum salary cannot be greater than maximum salary");
       return;
     }
+
+    if (!resume && !resumeFile && !skipResume) {
+      toast.error("Please either upload a resume or check 'Skip resume upload'");
+      return;
+    }
     
     try {
       setSubmitting(true);
@@ -74,7 +81,7 @@ export function ProfileForm() {
         salary_min: salaryMin,
         salary_max: salaryMax,
         skills,
-        resumeFile,
+        resumeFile: skipResume ? null : resumeFile,
       });
       
       toast.success("Profile updated successfully!");
@@ -99,6 +106,14 @@ export function ProfileForm() {
         return;
       }
       setResumeFile(file);
+      setSkipResume(false); // Uncheck skip resume when file is selected
+    }
+  };
+
+  const handleSkipResumeChange = (checked: boolean) => {
+    setSkipResume(checked);
+    if (checked) {
+      setResumeFile(null); // Clear selected file when skipping
     }
   };
 
@@ -198,37 +213,52 @@ export function ProfileForm() {
             />
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="resume">Upload Resume (PDF) *</Label>
-            {resume ? (
-              <div className="space-y-2">
-                <p className="text-sm text-green-600">
-                  Current resume: <a href={resume.file_url} target="_blank" rel="noopener noreferrer" className="underline">View</a>
-                </p>
-                <Input
-                  id="resume"
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleResumeUpload}
-                  className="cursor-pointer"
-                  disabled={submitting}
-                />
-              </div>
-            ) : (
-              <Input
-                id="resume"
-                type="file"
-                accept=".pdf"
-                onChange={handleResumeUpload}
-                required={!resume}
-                className="cursor-pointer"
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="skipResume" 
+                checked={skipResume}
+                onCheckedChange={handleSkipResumeChange}
                 disabled={submitting}
               />
-            )}
-            {resumeFile && (
-              <p className="text-sm text-green-600 mt-1">
-                Selected: {resumeFile.name}
-              </p>
+              <Label htmlFor="skipResume" className="text-sm font-normal">
+                Skip resume upload for now
+              </Label>
+            </div>
+
+            {!skipResume && (
+              <div className="space-y-2">
+                <Label htmlFor="resume">Upload Resume (PDF)</Label>
+                {resume ? (
+                  <div className="space-y-2">
+                    <p className="text-sm text-green-600">
+                      Current resume: <a href={resume.file_url} target="_blank" rel="noopener noreferrer" className="underline">View</a>
+                    </p>
+                    <Input
+                      id="resume"
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleResumeUpload}
+                      className="cursor-pointer"
+                      disabled={submitting}
+                    />
+                  </div>
+                ) : (
+                  <Input
+                    id="resume"
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleResumeUpload}
+                    className="cursor-pointer"
+                    disabled={submitting}
+                  />
+                )}
+                {resumeFile && (
+                  <p className="text-sm text-green-600 mt-1">
+                    Selected: {resumeFile.name}
+                  </p>
+                )}
+              </div>
             )}
           </div>
           
