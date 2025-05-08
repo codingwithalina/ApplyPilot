@@ -91,9 +91,15 @@ export function NavBar() {
           <Button
             asChild
             variant="outline"
-            className="border-applypilot-teal text-applypilot-teal hover:bg-applypilot-teal/10 dark:border-applypilot-teal dark:text-applypilot-teal dark:hover:bg-applypilot-teal/10"
+            className="border-applypilot-teal text-applypilot-teal hover:bg-applypilot-teal/10"
           >
-            <Link to="/profile">Create Profile</Link>
+            <Link to="/login">Sign In</Link>
+          </Button>
+          <Button
+            asChild
+            className="bg-gradient-to-r from-applypilot-teal to-applypilot-green border-0"
+          >
+            <Link to="/profile">Get Started</Link>
           </Button>
         </div>
       </div>
