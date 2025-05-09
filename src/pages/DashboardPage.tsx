@@ -324,16 +324,8 @@ const DashboardPage = () => {
             <CardContent>
               {resume ? (
                 <div className="space-y-4">
-                  <div className="border rounded-lg overflow-hidden h-[300px] mb-4">
-                    <iframe
-                      src={resume.file_url}
-                      className="w-full h-full"
-                      title="Resume Preview"
-                      allow="fullscreen"
-                    />
-                  </div>
                   <p className="text-sm text-muted-foreground">
-                    Your resume is ready for applications
+                    Current resume: {resume.file_url.split('/').pop()}
                   </p>
                   <div className="flex gap-3">
                     <Button variant="outline" asChild>

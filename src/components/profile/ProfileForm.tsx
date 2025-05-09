@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/context/ProfileContext";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,6 @@ export function ProfileForm() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [skipResume, setSkipResume] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Update form when dbProfile changes
   useEffect(() => {
@@ -42,15 +41,6 @@ export function ProfileForm() {
       setSkills(dbProfile.skills || "");
     }
   }, [dbProfile]);
-
-  // Cleanup preview URL when component unmounts
-  useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
 
   if (loading) {
     return (
@@ -121,10 +111,6 @@ export function ProfileForm() {
       }
 
       setResumeFile(file);
-      
-      // Create preview URL
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
       setSkipResume(false);
     }
   };
@@ -133,10 +119,6 @@ export function ProfileForm() {
     setSkipResume(checked);
     if (checked) {
       setResumeFile(null);
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-        setPreviewUrl(null);
-      }
     }
   };
 
@@ -254,14 +236,9 @@ export function ProfileForm() {
                 <Label htmlFor="resume">Upload Resume (PDF)</Label>
                 {resume ? (
                   <div className="space-y-4">
-                    <div className="border rounded-lg overflow-hidden h-[300px]">
-                      <iframe
-                        src={resume.file_url}
-                        className="w-full h-full"
-                        title="Current Resume"
-                        allow="fullscreen"
-                      />
-                    </div>
+                    <p className="text-sm text-green-600">
+                      Current resume: {resume.file_url.split('/').pop()}
+                    </p>
                     <Input
                       id="resume"
                       type="file"
@@ -282,21 +259,9 @@ export function ProfileForm() {
                   />
                 )}
                 {resumeFile && (
-                  <p className="text-sm text-green-600 mt-1">
+                  <p className="text-sm text-green-600">
                     Selected: {resumeFile.name}
                   </p>
-                )}
-
-                {/* PDF Preview */}
-                {(previewUrl || resume?.file_url) && (
-                  <div className="mt-4 border rounded-lg overflow-hidden h-[500px]">
-                    <iframe
-                      src={previewUrl || resume?.file_url}
-                      className="w-full h-full"
-                      title="Resume Preview"
-                      allow="fullscreen"
-                    />
-                  </div>
                 )}
               </div>
             )}

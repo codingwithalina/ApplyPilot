@@ -13,10 +13,9 @@ const UploadResumePage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [skipResume, setSkipResume] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [currentResume, setCurrentResume] = useState<string | null>(null);
 
-  // Load current resume on mount
+  // Loa current resume on mount
   useEffect(() => {
     const loadCurrentResume = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -55,10 +54,6 @@ const UploadResumePage = () => {
       }
 
       setFile(selectedFile);
-      
-      // Create preview URL
-      const url = URL.createObjectURL(selectedFile);
-      setPreviewUrl(url);
     }
   };
 
@@ -117,15 +112,6 @@ const UploadResumePage = () => {
     }
   };
 
-  // Cleanup preview URL when component unmounts
-  useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
-
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
@@ -141,14 +127,9 @@ const UploadResumePage = () => {
               {currentResume && (
                 <div className="mb-6">
                   <h3 className="text-sm font-medium mb-2">Current Resume</h3>
-                  <div className="border rounded-lg overflow-hidden h-[500px]">
-                    <iframe
-                      src={currentResume}
-                      className="w-full h-full"
-                      title="Current Resume"
-                      allow="fullscreen"
-                    />
-                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {currentResume.split('/').pop()}
+                  </p>
                 </div>
               )}
 
@@ -160,10 +141,6 @@ const UploadResumePage = () => {
                     setSkipResume(checked as boolean);
                     if (checked) {
                       setFile(null);
-                      if (previewUrl) {
-                        URL.revokeObjectURL(previewUrl);
-                        setPreviewUrl(null);
-                      }
                     }
                   }}
                 />
@@ -196,17 +173,6 @@ const UploadResumePage = () => {
                       <p className="text-sm text-green-600">
                         Selected file: {file.name}
                       </p>
-                      
-                      {previewUrl && (
-                        <div className="border rounded-lg overflow-hidden h-[500px]">
-                          <iframe
-                            src={previewUrl}
-                            className="w-full h-full"
-                            title="Resume Preview"
-                            allow="fullscreen"
-                          />
-                        </div>
-                      )}
                     </div>
                   )}
                 </>
