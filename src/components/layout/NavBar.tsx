@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
-import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import {
@@ -17,7 +16,6 @@ import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 
 export function NavBar() {
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
@@ -40,10 +38,6 @@ export function NavBar() {
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   const handleLogout = async () => {
@@ -98,17 +92,6 @@ export function NavBar() {
           </Link>
         </nav>
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={theme === "dark"}
-              onCheckedChange={toggleTheme}
-              className="data-[state=checked]:bg-applypilot-teal"
-            />
-            <span className="sr-only">
-              {theme === "dark" ? "Dark mode" : "Light mode"}
-            </span>
-          </div>
-          
           {user ? (
             <div className="flex items-center space-x-2">
               <DropdownMenu>
