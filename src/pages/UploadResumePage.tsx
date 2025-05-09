@@ -5,11 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { FileUp } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 const UploadResumePage = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [skipResume, setSkipResume] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -28,10 +32,19 @@ const UploadResumePage = () => {
       }
 
       setFile(selectedFile);
+      
+      // Create preview URL
+      const url = URL.createObjectURL(selectedFile);
+      setPreviewUrl(url);
     }
   };
 
   const handleUpload = async () => {
+    if (skipResume) {
+      navigate('/dashboard');
+      return;
+    }
+
     if (!file) {
       toast.error('Please select a file to upload');
       return;
@@ -80,9 +93,18 @@ const UploadResumePage = () => {
     }
   };
 
+  // Cleanup preview URL when component unmounts
+  React.useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="max-w-md mx-auto">
+      <div className="max-w-4xl mx-auto">
         <Card>
           <CardHeader>
             <CardTitle>Upload Your Resume</CardTitle>
@@ -91,29 +113,64 @@ const UploadResumePage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-center items-center w-full">
-                <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <FileUp className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
-                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                      <span className="font-semibold">Click to upload</span> or drag and drop
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">PDF (MAX. 5MB)</p>
-                  </div>
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept=".pdf"
-                    onChange={handleFileChange}
-                    disabled={uploading}
-                  />
-                </label>
+            <div className="space-y-6">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="skipResume" 
+                  checked={skipResume} 
+                  onCheckedChange={(checked) => {
+                    setSkipResume(checked as boolean);
+                    if (checked) {
+                      setFile(null);
+                      if (previewUrl) {
+                        URL.revokeObjectURL(previewUrl);
+                        setPreviewUrl(null);
+                      }
+                    }
+                  }}
+                />
+                <Label htmlFor="skipResume">Skip resume upload for now</Label>
               </div>
-              {file && (
-                <p className="text-sm text-green-600">
-                  Selected file: {file.name}
-                </p>
+
+              {!skipResume && (
+                <>
+                  <div className="flex justify-center items-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <FileUp className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">PDF (MAX. 5MB)</p>
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept=".pdf"
+                        onChange={handleFileChange}
+                        disabled={uploading}
+                      />
+                    </label>
+                  </div>
+
+                  {file && (
+                    <div className="space-y-4">
+                      <p className="text-sm text-green-600">
+                        Selected file: {file.name}
+                      </p>
+                      
+                      {previewUrl && (
+                        <div className="border rounded-lg overflow-hidden h-[500px]">
+                          <iframe
+                            src={previewUrl}
+                            className="w-full h-full"
+                            title="Resume Preview"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </CardContent>
@@ -121,9 +178,9 @@ const UploadResumePage = () => {
             <Button
               onClick={handleUpload}
               className="w-full"
-              disabled={!file || uploading}
+              disabled={!skipResume && !file || uploading}
             >
-              {uploading ? 'Uploading...' : 'Upload Resume'}
+              {uploading ? 'Uploading...' : (skipResume ? 'Continue Without Resume' : 'Upload Resume')}
             </Button>
             <Button
               variant="outline"
