@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { 
   FileText, Plus, History, ChevronRight, Star, Mail, BarChart, 
-  Settings, CheckCircle2, AlertCircle, Bell, Download, ExternalLink
+  Settings, CheckCircle2, AlertCircle, Bell, Download, ExternalLink,
+  Sparkles
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Profile, Resume } from '@/types';
+import { Profile, Resume, JobListing } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Switch } from "@/components/ui/switch";
@@ -39,6 +40,7 @@ const DashboardPage = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [resume, setResume] = useState<Resume | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [recommendedJobs, setRecommendedJobs] = useState<JobListing[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     totalApplications: 0,
     successRate: 0,
@@ -84,6 +86,33 @@ const DashboardPage = () => {
           successRate: 25,
           wishlistCount: 5
         });
+
+        // For demo purposes, using dummy recommended jobs based on profile
+        if (profileData?.desired_title) {
+          // In a real app, this would be a proper job matching algorithm
+          setRecommendedJobs([
+            {
+              id: 'rec-1',
+              title: profileData.desired_title,
+              company: 'TechCorp Inc.',
+              location: profileData.location || 'Remote',
+              salary: `$${profileData.salary_min} - $${profileData.salary_max}`,
+              description: 'Perfect match for your profile!',
+              requirements: ['Experience in ' + profileData.skills],
+              posted: new Date().toISOString()
+            },
+            {
+              id: 'rec-2',
+              title: 'Senior ' + profileData.desired_title,
+              company: 'InnovateTech',
+              location: profileData.location || 'Remote',
+              salary: `$${profileData.salary_min + 20000} - $${profileData.salary_max + 30000}`,
+              description: 'Great opportunity for career growth!',
+              requirements: ['Advanced ' + profileData.skills],
+              posted: new Date().toISOString()
+            }
+          ]);
+        }
 
       } catch (error) {
         console.error('Error loading dashboard data:', error);
@@ -336,8 +365,9 @@ const DashboardPage = () => {
           </Card>
         </div>
 
-        {/* Saved Jobs */}
-        <div className="mt-6">
+        {/* Saved Jobs and Recommended Jobs */}
+        <div className="mt-6 grid md:grid-cols-2 gap-6">
+          {/* Saved Jobs */}
           <Card>
             <CardHeader>
               <CardTitle className="text-xl font-semibold flex items-center">
@@ -353,6 +383,53 @@ const DashboardPage = () => {
                   <Link to="/jobs">Discover Jobs</Link>
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Recommended Jobs */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold flex items-center">
+                <Sparkles className="w-5 h-5 mr-2 text-applypilot-green" />
+                Recommended Jobs
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {recommendedJobs.length > 0 ? (
+                <div className="space-y-4">
+                  {recommendedJobs.map((job) => (
+                    <div key={job.id} className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-medium">{job.title}</h4>
+                          <p className="text-sm text-muted-foreground">{job.company}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
+                              {job.location}
+                            </Badge>
+                            <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
+                              {job.salary}
+                            </Badge>
+                          </div>
+                        </div>
+                        <Button variant="outline" size="sm" asChild>
+                          <Link to={`/jobs/${job.id}`}>
+                            View
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6 text-muted-foreground">
+                  <Sparkles className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                  <p>Complete your profile to get personalized recommendations</p>
+                  <Button variant="link" asChild className="mt-2">
+                    <Link to="/profile">Update Profile</Link>
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
