@@ -62,16 +62,18 @@ const DashboardPage = () => {
           .eq('id', user.id)
           .single();
 
-        // Load resume
+        // Load resume - modified to handle multiple resumes
         const { data: resumeData } = await supabase
           .from('resumes')
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-        // Load applications
+        // Load applications - modified to use applications table instead of application
         const { data: applicationsData } = await supabase
-          .from('application')
+          .from('applications')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
@@ -73,15 +73,16 @@ const UploadResumePage = () => {
         .from('resumes')
         .getPublicUrl(filePath);
 
-    // Save resume record in database
-const { data: resume, error: dbError } = await supabase
-  .from('resumes')
-   .insert([
-     { user_id: user.id, file_url: publicUrl }
-   ])
-   .select()
-   .single();
- if (dbError) throw dbError;
+      // Save resume record in database
+      const { data: resume, error: dbError } = await supabase
+        .from('resumes')
+        .insert([
+          { user_id: user.id, file_url: publicUrl }
+        ])
+        .select()
+        .single();
+
+      if (dbError) throw dbError;
 
       toast.success('Resume uploaded successfully!');
       navigate('/dashboard');
@@ -94,7 +95,7 @@ const { data: resume, error: dbError } = await supabase
   };
 
   // Cleanup preview URL when component unmounts
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
