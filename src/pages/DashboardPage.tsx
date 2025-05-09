@@ -116,6 +116,7 @@ const DashboardPage = () => {
 
       } catch (error) {
         console.error('Error loading dashboard data:', error);
+        toast.error('Failed to load profile data');
       } finally {
         setLoading(false);
       }
@@ -241,65 +242,6 @@ const DashboardPage = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* Applications Section */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold flex items-center">
-                <Mail className="w-5 h-5 mr-2 text-applypilot-blue" />
-                My Applications
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {applications.length === 0 ? (
-                <div className="text-center py-6 text-muted-foreground">
-                  <Mail className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                  <p>No applications yet</p>
-                  <Button variant="link" asChild className="mt-2">
-                    <Link to="/jobs">Start Applying</Link>
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {applications.map((application) => (
-                    <div 
-                      key={application.id} 
-                      className="flex items-center justify-between p-4 rounded-lg border bg-card"
-                    >
-                      <div className="flex-1">
-                        <h4 className="font-medium">{application.job_title || "Software Engineer"}</h4>
-                        <p className="text-sm text-muted-foreground">{application.company || "TechCorp Inc."}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge 
-                            variant="outline" 
-                            className={getStatusColor(application.status)}
-                          >
-                            {getStatusText(application.status)}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            Applied {new Date(application.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm">
-                          <Download className="w-4 h-4 mr-1" />
-                          Resume
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Download className="w-4 h-4 mr-1" />
-                          Cover Letter
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -350,13 +292,13 @@ const DashboardPage = () => {
             <CardHeader>
               <CardTitle className="text-xl font-semibold flex items-center">
                 <Mail className="w-5 h-5 mr-2 text-applypilot-blue" />
-                Recent Applications
+                Recent Activity
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-6 text-muted-foreground">
                 <Mail className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                <p>No recent applications</p>
+                <p>No recent activity</p>
                 <Button variant="link" asChild className="mt-2">
                   <Link to="/jobs">Browse Jobs</Link>
                 </Button>
@@ -364,6 +306,65 @@ const DashboardPage = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Applications Section */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold flex items-center">
+              <Mail className="w-5 h-5 mr-2 text-applypilot-blue" />
+              My Applications
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {applications.length === 0 ? (
+              <div className="text-center py-6 text-muted-foreground">
+                <Mail className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                <p>No applications yet</p>
+                <Button variant="link" asChild className="mt-2">
+                  <Link to="/jobs">Start Applying</Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {applications.map((application) => (
+                  <div 
+                    key={application.id} 
+                    className="flex items-center justify-between p-4 rounded-lg border bg-card"
+                  >
+                    <div className="flex-1">
+                      <h4 className="font-medium">{application.job_title || "Software Engineer"}</h4>
+                      <p className="text-sm text-muted-foreground">{application.company || "TechCorp Inc."}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge 
+                          variant="outline" 
+                          className={getStatusColor(application.status)}
+                        >
+                          {getStatusText(application.status)}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          Applied {new Date(application.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm">
+                        <Download className="w-4 h-4 mr-1" />
+                        Resume
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Download className="w-4 h-4 mr-1" />
+                        Cover Letter
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <ExternalLink className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Saved Jobs and Recommended Jobs */}
         <div className="mt-6 grid md:grid-cols-2 gap-6">
