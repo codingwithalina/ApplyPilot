@@ -289,7 +289,7 @@ export function ProfileForm() {
                       src={previewUrl || resume?.file_url}
                       className="w-full h-full"
                       title="Resume Preview"
-                      sandbox="allow-scripts allow-same-origin"
+                      
                     />
                   </div>
                 )}
