@@ -254,9 +254,14 @@ export function ProfileForm() {
                 <Label htmlFor="resume">Upload Resume (PDF)</Label>
                 {resume ? (
                   <div className="space-y-4">
-                    <p className="text-sm text-green-600">
-                      Current resume: <a href={resume.file_url} target="_blank" rel="noopener noreferrer" className="underline">View</a>
-                    </p>
+                    <div className="border rounded-lg overflow-hidden h-[300px]">
+                      <iframe
+                        src={resume.file_url}
+                        className="w-full h-full"
+                        title="Current Resume"
+                        sandbox="allow-scripts allow-same-origin"
+                      />
+                    </div>
                     <Input
                       id="resume"
                       type="file"
@@ -289,7 +294,7 @@ export function ProfileForm() {
                       src={previewUrl || resume?.file_url}
                       className="w-full h-full"
                       title="Resume Preview"
-                      
+                      sandbox="allow-scripts allow-same-origin"
                     />
                   </div>
                 )}
