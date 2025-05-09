@@ -73,15 +73,15 @@ const UploadResumePage = () => {
         .from('resumes')
         .getPublicUrl(filePath);
 
-      // Save resume record in database
-      const { error: dbError } = await supabase
-        .from('resumes')
-        .upsert({
-          user_id: user.id,
-          file_url: publicUrl,
-        });
-
-      if (dbError) throw dbError;
+    // Save resume record in database
+const { data: resume, error: dbError } = await supabase
+  .from('resumes')
+   .insert([
+     { user_id: user.id, file_url: publicUrl }
+   ])
+   .select()
+   .single();
+ if (dbError) throw dbError;
 
       toast.success('Resume uploaded successfully!');
       navigate('/dashboard');
