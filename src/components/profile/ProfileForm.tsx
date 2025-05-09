@@ -29,6 +29,7 @@ export function ProfileForm() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [skipResume, setSkipResume] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Update form when dbProfile changes
   useEffect(() => {
@@ -41,6 +42,15 @@ export function ProfileForm() {
       setSkills(dbProfile.skills || "");
     }
   }, [dbProfile]);
+
+  // Cleanup preview URL when component unmounts
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   if (loading) {
     return (
@@ -106,14 +116,22 @@ export function ProfileForm() {
         return;
       }
       setResumeFile(file);
-      setSkipResume(false); // Uncheck skip resume when file is selected
+      setSkipResume(false);
+
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
     }
   };
 
   const handleSkipResumeChange = (checked: boolean) => {
     setSkipResume(checked);
     if (checked) {
-      setResumeFile(null); // Clear selected file when skipping
+      setResumeFile(null);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
     }
   };
 
@@ -230,7 +248,7 @@ export function ProfileForm() {
               <div className="space-y-2">
                 <Label htmlFor="resume">Upload Resume (PDF)</Label>
                 {resume ? (
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     <p className="text-sm text-green-600">
                       Current resume: <a href={resume.file_url} target="_blank" rel="noopener noreferrer" className="underline">View</a>
                     </p>
@@ -257,6 +275,17 @@ export function ProfileForm() {
                   <p className="text-sm text-green-600 mt-1">
                     Selected: {resumeFile.name}
                   </p>
+                )}
+
+                {/* PDF Preview */}
+                {(previewUrl || resume?.file_url) && (
+                  <div className="mt-4 border rounded-lg overflow-hidden h-[500px]">
+                    <iframe
+                      src={previewUrl || resume?.file_url}
+                      className="w-full h-full"
+                      title="Resume Preview"
+                    />
+                  </div>
                 )}
               </div>
             )}
