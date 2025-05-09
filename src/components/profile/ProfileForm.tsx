@@ -107,20 +107,25 @@ export function ProfileForm() {
   const handleResumeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      
+      // Validate file type
       if (file.type !== 'application/pdf') {
         toast.error('Please upload a PDF file');
         return;
       }
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
         toast.error('File size must be less than 5MB');
         return;
       }
-      setResumeFile(file);
-      setSkipResume(false);
 
+      setResumeFile(file);
+      
       // Create preview URL
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
+      setSkipResume(false);
     }
   };
 
@@ -284,7 +289,7 @@ export function ProfileForm() {
                       src={previewUrl || resume?.file_url}
                       className="w-full h-full"
                       title="Resume Preview"
-                      sandbox="allow-same-origin"
+                      sandbox="allow-scripts allow-same-origin"
                     />
                   </div>
                 )}

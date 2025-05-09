@@ -146,6 +146,7 @@ const UploadResumePage = () => {
                       src={currentResume}
                       className="w-full h-full"
                       title="Current Resume"
+                      sandbox="allow-scripts allow-same-origin"
                     />
                   </div>
                 </div>
@@ -202,6 +203,7 @@ const UploadResumePage = () => {
                             src={previewUrl}
                             className="w-full h-full"
                             title="Resume Preview"
+                            sandbox="allow-scripts allow-same-origin"
                           />
                         </div>
                       )}
