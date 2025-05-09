@@ -14,6 +14,29 @@ const UploadResumePage = () => {
   const [uploading, setUploading] = useState(false);
   const [skipResume, setSkipResume] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [currentResume, setCurrentResume] = useState<string | null>(null);
+
+  // Load current resume on mount
+  useEffect(() => {
+    const loadCurrentResume = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: resume } = await supabase
+        .from('resumes')
+        .select('file_url')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (resume) {
+        setCurrentResume(resume.file_url);
+      }
+    };
+
+    loadCurrentResume();
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -115,6 +138,19 @@ const UploadResumePage = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
+              {currentResume && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium mb-2">Current Resume</h3>
+                  <div className="border rounded-lg overflow-hidden h-[500px]">
+                    <iframe
+                      src={currentResume}
+                      className="w-full h-full"
+                      title="Current Resume"
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center space-x-2">
                 <Checkbox 
                   id="skipResume" 
