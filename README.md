@@ -95,7 +95,7 @@ Kurz und allgemein gesagt, gehst du so vor, um deine Bilder und Icons öffentlic
 
 Damit sind deine Binärdateien (Icons, JPGs, PNGs etc.) weltweit über eine feste URL erreichbar und du musst sie nicht mehr lokal in public/ verwalten.
 
-## ✅ Future Features
+## ✅ Future Features + Todos
 
 - [ ] Templates wählen für bewerbung
 - [ ] settings einfügen mit passwort reset etc.
@@ -111,3 +111,7 @@ Scroll-To-Top-Button am unteren Rand.
 - [ ] Assessment Center
 - [ ] Mit KI Vorstellungsgespräche üben
 - [ ] Website: links lottieanimation, rechts cards die wechseln (die im moment drunter sind)
+- [ ] make website ready
+- [ ] translate to german
+- [ ] light and dark mode verbessern
+
