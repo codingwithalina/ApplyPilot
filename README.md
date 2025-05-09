@@ -114,4 +114,11 @@ Scroll-To-Top-Button am unteren Rand.
 - [ ] make website ready
 - [ ] translate to german
 - [ ] light and dark mode verbessern
+- [ ] gesuchte zeit (teilzeit, minijob, vollzeit)
+- [ ] job alert (über mail + dashboard)
+- [ ] mehr infos und skills ins profikl
+- [ ] profilbild
+- [ ] hosten
+- [ ] Zahlungen über stripe einrichten
+- [ ] einstellungen seitte
 
