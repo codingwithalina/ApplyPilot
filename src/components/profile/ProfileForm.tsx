@@ -245,7 +245,7 @@ export function ProfileForm() {
             </div>
 
             {!skipResume && (
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <Label htmlFor="resume">Upload Resume (PDF)</Label>
                 {resume ? (
                   <div className="space-y-4">
