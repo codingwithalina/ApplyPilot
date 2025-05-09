@@ -135,6 +135,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           .upsert({
             user_id: user.id,
             file_url: publicUrl,
+            created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           })
           .select()
