@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/context/ProfileContext";
 import { Button } from "@/components/ui/button";
@@ -236,9 +236,18 @@ export function ProfileForm() {
                 <Label htmlFor="resume">Upload Resume (PDF)</Label>
                 {resume ? (
                   <div className="space-y-4">
-                    <p className="text-sm text-green-600">
-                      Current resume: {resume.file_url.split('/').pop()}
-                    </p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-green-600">
+                        Current resume: {resume.file_url.split('/').pop()}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        asChild
+                      >
+                        <a href={resume.file_url} target="_blank" rel="noopener noreferrer">View</a>
+                      </Button>
+                    </div>
                     <Input
                       id="resume"
                       type="file"
