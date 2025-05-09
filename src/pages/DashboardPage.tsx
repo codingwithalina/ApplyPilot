@@ -8,7 +8,7 @@ import {
   Settings, CheckCircle2, AlertCircle, Bell, Download, ExternalLink,
   Sparkles
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Profile, Resume, JobListing } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -37,6 +37,7 @@ interface ProfileField {
 }
 
 const DashboardPage = () => {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [resume, setResume] = useState<Resume | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
@@ -323,6 +324,14 @@ const DashboardPage = () => {
             <CardContent>
               {resume ? (
                 <div className="space-y-4">
+                  <div className="border rounded-lg overflow-hidden h-[300px] mb-4">
+                    <iframe
+                      src={resume.file_url}
+                      className="w-full h-full"
+                      title="Resume Preview"
+                      sandbox="allow-same-origin"
+                    />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Your resume is ready for applications
                   </p>
@@ -332,7 +341,12 @@ const DashboardPage = () => {
                         View Resume
                       </a>
                     </Button>
-                    <Button variant="outline">Update Resume</Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => navigate('/resume/upload')}
+                    >
+                      Update Resume
+                    </Button>
                   </div>
                 </div>
               ) : (
