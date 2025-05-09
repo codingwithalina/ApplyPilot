@@ -5,13 +5,23 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { 
   FileText, Plus, History, ChevronRight, Star, Mail, BarChart, 
-  Settings, CheckCircle2, AlertCircle, Bell
+  Settings, CheckCircle2, AlertCircle, Bell, Download, ExternalLink
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Profile, Resume } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+
+interface Application {
+  id: string;
+  job_id: string;
+  status: 'draft' | 'submitted' | 'in_progress';
+  created_at: string;
+  job_title?: string;
+  company?: string;
+}
 
 interface DashboardStats {
   totalApplications: number;
@@ -28,6 +38,7 @@ interface ProfileField {
 const DashboardPage = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [resume, setResume] = useState<Resume | null>(null);
+  const [applications, setApplications] = useState<Application[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     totalApplications: 0,
     successRate: 0,
@@ -56,12 +67,20 @@ const DashboardPage = () => {
           .eq('user_id', user.id)
           .single();
 
+        // Load applications
+        const { data: applicationsData } = await supabase
+          .from('application')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
         setProfile(profileData);
         setResume(resumeData);
+        setApplications(applicationsData || []);
         
         // In a real app, these would be actual database queries
         setStats({
-          totalApplications: 12,
+          totalApplications: applicationsData?.length || 0,
           successRate: 25,
           wishlistCount: 5
         });
@@ -89,6 +108,32 @@ const DashboardPage = () => {
   const completedFields = profileFields.filter(field => field.completed).length;
   const totalFields = profileFields.length;
   const profileCompletionPercentage = (completedFields / totalFields) * 100;
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'draft':
+        return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
+      case 'submitted':
+        return 'bg-green-500/10 text-green-500 border-green-500/20';
+      case 'in_progress':
+        return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+      default:
+        return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'draft':
+        return 'Draft';
+      case 'submitted':
+        return 'Submitted';
+      case 'in_progress':
+        return 'In Progress';
+      default:
+        return status;
+    }
+  };
 
   if (loading) {
     return (
@@ -165,6 +210,65 @@ const DashboardPage = () => {
                   </Tooltip>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Applications Section */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold flex items-center">
+                <Mail className="w-5 h-5 mr-2 text-applypilot-blue" />
+                My Applications
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {applications.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground">
+                  <Mail className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                  <p>No applications yet</p>
+                  <Button variant="link" asChild className="mt-2">
+                    <Link to="/jobs">Start Applying</Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {applications.map((application) => (
+                    <div 
+                      key={application.id} 
+                      className="flex items-center justify-between p-4 rounded-lg border bg-card"
+                    >
+                      <div className="flex-1">
+                        <h4 className="font-medium">{application.job_title || "Software Engineer"}</h4>
+                        <p className="text-sm text-muted-foreground">{application.company || "TechCorp Inc."}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge 
+                            variant="outline" 
+                            className={getStatusColor(application.status)}
+                          >
+                            {getStatusText(application.status)}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            Applied {new Date(application.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm">
+                          <Download className="w-4 h-4 mr-1" />
+                          Resume
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Download className="w-4 h-4 mr-1" />
+                          Cover Letter
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <ExternalLink className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
