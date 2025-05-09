@@ -72,7 +72,7 @@ const DashboardPage = () => {
           .limit(1)
           .maybeSingle();
 
-        // Load applications - modified to use applications table instead of application
+        // Load applications - using correct table name
         const { data: applicationsData } = await supabase
           .from('applications')
           .select('*')
