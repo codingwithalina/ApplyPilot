@@ -56,14 +56,31 @@ const DashboardPage = () => {
           .eq('user_id', user.id)
           .single();
 
+        // Load matches
+        const { data: matchesData } = await supabase
+          .from('matches')
+          .select('*')
+          .eq('user_id', user.id);
+
+        // Load wishlist
+        const { data: wishlistData } = await supabase
+          .from('wishlist')
+          .select('*')
+          .eq('user_id', user.id);
+
+        // Load applications
+        const { data: applicationsData } = await supabase
+          .from('application')
+          .select('*')
+          .eq('user_id', user.id);
+
         setProfile(profileData);
         setResume(resumeData);
         
-        // In a real app, these would be actual database queries
         setStats({
-          totalApplications: 12,
-          successRate: 25,
-          wishlistCount: 5
+          totalApplications: applicationsData?.length || 0,
+          successRate: 25, // Example value
+          wishlistCount: wishlistData?.length || 0
         });
 
       } catch (error) {
@@ -108,22 +125,25 @@ const DashboardPage = () => {
           <div className="flex justify-between items-start mb-4">
             <div>
               <h1 className="text-3xl font-bold">
-                Welcome back, {profile?.full_name || profile?.desired_title || 'User'}!
+                {profile?.full_name ? `Hallo ${profile.full_name}!` : 'Willkommen!'}
               </h1>
               <p className="text-muted-foreground mt-2">
-                Last activity: Today at 9:30 AM
+                Dein Profil ist zu {Math.round(profileCompletionPercentage)} % vollständig
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <Switch
-                checked={jobAlerts}
-                onCheckedChange={setJobAlerts}
-                className="data-[state=checked]:bg-applypilot-green"
-              />
+              <div className="flex items-center gap-2">
+                <Bell className="h-4 w-4 text-muted-foreground" />
+                <Switch
+                  checked={jobAlerts}
+                  onCheckedChange={setJobAlerts}
+                  className="data-[state=checked]:bg-applypilot-green"
+                />
+              </div>
               <Button asChild className="bg-gradient-to-r from-applypilot-teal to-applypilot-green">
                 <Link to="/jobs">
                   <Plus className="w-4 h-4 mr-2" />
-                  Find Jobs
+                  Jobs finden
                 </Link>
               </Button>
             </div>
@@ -133,13 +153,13 @@ const DashboardPage = () => {
             <CardContent className="pt-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
-                  <h3 className="font-semibold mb-1">Profile Completion</h3>
+                  <h3 className="font-semibold mb-1">Profil vervollständigen</h3>
                   <p className="text-sm text-muted-foreground">
-                    {completedFields} of {totalFields} fields completed
+                    {completedFields} von {totalFields} Felder ausgefüllt
                   </p>
                 </div>
                 <Button variant="outline" asChild>
-                  <Link to="/profile">Complete Profile</Link>
+                  <Link to="/profile">Profil bearbeiten</Link>
                 </Button>
               </div>
               <Progress value={profileCompletionPercentage} className="h-2 mb-4" />
@@ -158,8 +178,8 @@ const DashboardPage = () => {
                     </TooltipTrigger>
                     <TooltipContent>
                       {field.completed ? 
-                        `${field.label} is completed` : 
-                        `Click to add your ${field.label.toLowerCase()}`
+                        `${field.label} ist ausgefüllt` : 
+                        `Klicke um ${field.label} hinzuzufügen`
                       }
                     </TooltipContent>
                   </Tooltip>
@@ -170,136 +190,72 @@ const DashboardPage = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Resume Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold flex items-center justify-between">
-                <div className="flex items-center">
-                  <FileText className="w-5 h-5 mr-2 text-applypilot-teal" />
-                  Resume
-                </div>
-                {resume && (
-                  <span className="text-sm text-muted-foreground">
-                    Updated {new Date(resume.updated_at).toLocaleDateString()}
-                  </span>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {resume ? (
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Your resume is ready for applications
-                  </p>
-                  <div className="flex gap-3">
-                    <Button variant="outline" asChild>
-                      <a href={resume.file_url} target="_blank" rel="noopener noreferrer">
-                        View Resume
-                      </a>
-                    </Button>
-                    <Button variant="outline">Update Resume</Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <FileText className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-20" />
-                  <p className="text-muted-foreground mb-4">No resume uploaded yet</p>
-                  <Button asChild>
-                    <Link to="/resume/upload">Upload Resume</Link>
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold flex items-center">
-                <Mail className="w-5 h-5 mr-2 text-applypilot-blue" />
-                Recent Applications
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-6 text-muted-foreground">
-                <Mail className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                <p>No recent applications</p>
-                <Button variant="link" asChild className="mt-2">
-                  <Link to="/jobs">Browse Jobs</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Saved Jobs */}
-        <div className="mt-6">
+          {/* Empfohlene Jobs */}
           <Card>
             <CardHeader>
               <CardTitle className="text-xl font-semibold flex items-center">
                 <Star className="w-5 h-5 mr-2 text-applypilot-teal" />
-                Saved Jobs
+                Empfohlene Jobs
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center py-6 text-muted-foreground">
                 <Star className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                <p>No saved jobs yet</p>
+                <p>Vervollständige dein Profil für personalisierte Empfehlungen</p>
                 <Button variant="link" asChild className="mt-2">
-                  <Link to="/jobs">Discover Jobs</Link>
+                  <Link to="/profile">Profil vervollständigen</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Meine Bewerbungen */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold flex items-center">
+                <Mail className="w-5 h-5 mr-2 text-applypilot-blue" />
+                Meine Bewerbungen
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-6 text-muted-foreground">
+                <Mail className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                <p>Keine aktiven Bewerbungen</p>
+                <Button variant="link" asChild className="mt-2">
+                  <Link to="/jobs">Jobs durchsuchen</Link>
                 </Button>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Checklist Section */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold flex items-center">
-              <CheckCircle2 className="w-5 h-5 mr-2 text-applypilot-teal" />
-              Next Steps
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {!resume && (
-                <div className="flex items-center">
-                  <input type="checkbox" className="mr-3" />
-                  <span>Upload your resume to start applying for jobs</span>
-                  <Button variant="link" asChild className="ml-auto">
-                    <Link to="/resume/upload">Upload</Link>
-                  </Button>
-                </div>
-              )}
-              {!profile?.desired_title && (
-                <div className="flex items-center">
-                  <input type="checkbox" className="mr-3" />
-                  <span>Set your desired job title to get better matches</span>
-                  <Button variant="link" asChild className="ml-auto">
-                    <Link to="/profile">Update</Link>
-                  </Button>
-                </div>
-              )}
-              {!profile?.skills && (
-                <div className="flex items-center">
-                  <input type="checkbox" className="mr-3" />
-                  <span>Add your skills to improve recommendations</span>
-                  <Button variant="link" asChild className="ml-auto">
-                    <Link to="/profile">Add Skills</Link>
-                  </Button>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Merkliste */}
+        <div className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold flex items-center">
+                <Star className="w-5 h-5 mr-2 text-applypilot-teal" />
+                Merkliste
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-6 text-muted-foreground">
+                <Star className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                <p>Keine gespeicherten Jobs</p>
+                <Button variant="link" asChild className="mt-2">
+                  <Link to="/jobs">Jobs entdecken</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Settings Quick Access */}
         <div className="flex justify-end mt-6">
           <Button variant="outline" asChild className="text-muted-foreground">
             <Link to="/settings">
               <Settings className="w-4 h-4 mr-2" />
-              Account Settings
+              Einstellungen
             </Link>
           </Button>
         </div>
