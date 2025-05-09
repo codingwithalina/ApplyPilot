@@ -329,7 +329,7 @@ const DashboardPage = () => {
                       src={resume.file_url}
                       className="w-full h-full"
                       title="Resume Preview"
-                      sandbox="allow-same-origin"
+                      allow="fullscreen"
                     />
                   </div>
                   <p className="text-sm text-muted-foreground">
