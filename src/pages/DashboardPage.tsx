@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { 
   FileText, Plus, History, ChevronRight, Star, Mail, BarChart, 
-  Bell, Settings, CheckCircle2, AlertCircle
+  Settings, CheckCircle2, AlertCircle, Bell
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Profile, Resume } from '@/types';
@@ -83,6 +83,7 @@ const DashboardPage = () => {
     { name: 'salary_min', label: 'Minimum Salary', completed: Boolean(profile?.salary_min) },
     { name: 'salary_max', label: 'Maximum Salary', completed: Boolean(profile?.salary_max) },
     { name: 'skills', label: 'Skills', completed: Boolean(profile?.skills) },
+    { name: 'resume', label: 'Resume', completed: Boolean(resume) },
   ];
 
   const completedFields = profileFields.filter(field => field.completed).length;
@@ -113,12 +114,19 @@ const DashboardPage = () => {
                 Last activity: Today at 9:30 AM
               </p>
             </div>
-            <Button asChild className="bg-gradient-to-r from-applypilot-teal to-applypilot-green">
-              <Link to="/jobs">
-                <Plus className="w-4 h-4 mr-2" />
-                Find Jobs
-              </Link>
-            </Button>
+            <div className="flex items-center gap-4">
+              <Switch
+                checked={jobAlerts}
+                onCheckedChange={setJobAlerts}
+                className="data-[state=checked]:bg-applypilot-green"
+              />
+              <Button asChild className="bg-gradient-to-r from-applypilot-teal to-applypilot-green">
+                <Link to="/jobs">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Find Jobs
+                </Link>
+              </Button>
+            </div>
           </div>
 
           <Card className="mb-6">
@@ -204,47 +212,7 @@ const DashboardPage = () => {
             </CardContent>
           </Card>
 
-          {/* Job Alerts Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold flex items-center justify-between">
-                <div className="flex items-center">
-                  <Bell className="w-5 h-5 mr-2 text-applypilot-green" />
-                  Job Alerts
-                </div>
-                <Switch
-                  checked={jobAlerts}
-                  onCheckedChange={setJobAlerts}
-                  className="data-[state=checked]:bg-applypilot-green"
-                />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Get notified when new jobs match your profile
-                </p>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span>Daily digest</span>
-                    <Switch checked={true} />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Instant notifications</span>
-                    <Switch checked={false} />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Salary updates</span>
-                    <Switch checked={true} />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="grid md:grid-cols-2 gap-6 mt-6">
+          {/* Recent Activity */}
           <Card>
             <CardHeader>
               <CardTitle className="text-xl font-semibold flex items-center">
@@ -262,7 +230,10 @@ const DashboardPage = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
 
+        {/* Saved Jobs */}
+        <div className="mt-6">
           <Card>
             <CardHeader>
               <CardTitle className="text-xl font-semibold flex items-center">
@@ -319,11 +290,6 @@ const DashboardPage = () => {
                   </Button>
                 </div>
               )}
-              <div className="flex items-center">
-                <input type="checkbox" className="mr-3" />
-                <span>Set up job alerts for your preferred positions</span>
-                <Button variant="link" className="ml-auto">Configure</Button>
-              </div>
             </div>
           </CardContent>
         </Card>
